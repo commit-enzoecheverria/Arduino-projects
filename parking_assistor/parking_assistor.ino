@@ -1,34 +1,63 @@
-//DISTANCE
+// DISTANCE
 float distance;
 float raw;
 
 //BUZZER
-unsigned long buzzDuration = 100;
+unsigned long buzzDuration = 50;
 unsigned long buzzSeparation = 100;
 unsigned long lastBuzz;
-float buzzDistanceMultiplicationFactor = 1.25;
-bool buzzing = false;
+float distanceDivisionFactor = 0.67;
+float closeThreshold = 3;
+bool buzzing;
 
 
 void setup() {
   Serial.begin(9600);
 
   pinMode(7, OUTPUT);
-  pinMode(8, INPUT);
-
   pinMode(12, OUTPUT);
+
+  pinMode(8, INPUT);
 }
 
 void loop() {
-  raw = readDistance(7, 8);
+  raw = readDistance(7, 8) * 0.034/2;
 
+  manageDistanceOutput();
+
+  manageBuzzer();
+}
+
+void manageDistanceOutput() {
   if(raw != 0) {
-    distance = raw * 0.034/2;
-    Serial.println(distance);
+    distance = raw;
   }
 
+  if(distance > closeThreshold) {
+    Serial.println(distance);
+  }
+  else {
+    Serial.println("CLOSE");
+  }
+}
 
-  Buzz();
+void manageBuzzer() {
+  if(distance > closeThreshold) {
+    if(!buzzing && millis() - lastBuzz > buzzSeparation * (distance/distanceDivisionFactor)) {
+     buzzing = true;
+      lastBuzz = millis();
+      tone(12, 1000);
+    }
+
+    if(buzzing && millis() - lastBuzz > buzzDuration) {
+      buzzing = false;
+      noTone(12);
+    }
+  }
+  else {
+    buzzing = true;
+    tone(12, 1000);
+  }
 }
 
 long readDistance(int trigPin, int echoPin) {
@@ -39,18 +68,6 @@ long readDistance(int trigPin, int echoPin) {
   digitalWrite(trigPin, LOW);
   pinMode(echoPin, INPUT);
 
-  return pulseIn(echoPin, HIGH, 3000);
+  return pulseIn(echoPin, HIGH, 30000);
 }
 
-void Buzz() {
-  if(!buzzing && millis() - lastBuzz > buzzSeparation * (distance * buzzDistanceMultiplicationFactor)) {
-    buzzing = true;
-    lastBuzz = millis();
-    tone(12, 1000);
-  }
-
-  if(buzzing && millis() - lastBuzz > buzzDuration) {
-    buzzing = false;
-    noTone(12);
-  }
-}
