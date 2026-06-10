@@ -10,11 +10,20 @@ float distanceDivisionFactor = 0.67;
 float closeThreshold = 3;
 bool buzzing;
 
+//LEDs
+int ledsPins[3] = {11, 10, 9};
+unsigned long ledSeparation = 500;
+unsigned long leds[3] = {11, 10, 9};
+
 
 void setup() {
   Serial.begin(9600);
 
+
   pinMode(7, OUTPUT);
+  pinMode(9, OUTPUT);
+  pinMode(10, OUTPUT);
+  pinMode(11, OUTPUT);
   pinMode(12, OUTPUT);
 
   pinMode(8, INPUT);
@@ -25,7 +34,16 @@ void loop() {
 
   manageDistanceOutput();
 
-  manageBuzzer();
+  //manageBuzzer();
+
+  if(distance < 26) {
+    digitalWrite(leds[0], HIGH);
+  }
+  else {
+    digitalWrite(leds[0], LOW);
+  }
+
+  if(distance <)
 }
 
 void manageDistanceOutput() {
