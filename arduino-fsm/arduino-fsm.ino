@@ -44,6 +44,7 @@ void loop() {
     case(MANUAL):
       ManualState();
       break;
+      
   }
 
   currentState = nextState;
