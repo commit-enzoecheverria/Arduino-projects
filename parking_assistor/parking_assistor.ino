@@ -34,7 +34,7 @@ void loop() {
 
   manageDistanceOutput();
 
-  //manageBuzzer();
+  manageBuzzer();
 
   if(distance < 26) {
     digitalWrite(leds[0], HIGH);
